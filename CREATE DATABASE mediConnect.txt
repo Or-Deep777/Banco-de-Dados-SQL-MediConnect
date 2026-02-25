@@ -1,0 +1,93 @@
+CREATE DATABASE mediConnect;
+
+USE mediConnect;
+
+/*CRIAÇÃO DAS TABELAS*/
+
+CREATE TABLE especialidade(
+id INT PRIMARY KEY AUTO_INCREMENT,
+nome VARCHAR(50)
+);
+
+CREATE TABLE medico(
+crm INT PRIMARY KEY,
+nome VARCHAR(100),
+uf VARCHAR(2),
+id_especialidade INT,
+FOREIGN KEY (id_especialidade) REFERENCES especialidade(id) 
+);
+
+CREATE TABLE paciente(
+cpf VARCHAR(20) PRIMARY KEY,
+nome VARCHAR(100),
+nascimento DATE,
+cidade VARCHAR(100),
+email VARCHAR(100)
+);
+
+CREATE TABLE consulta(
+id INT PRIMARY KEY AUTO_INCREMENT,
+data_agendamento DATE,
+hora_agendamento TIME,
+valor DECIMAL(10,2),
+status_consulta VARCHAR(20),
+cpf VARCHAR(20),
+crm INT,
+FOREIGN KEY (cpf) REFERENCES paciente(cpf),
+FOREIGN KEY (crm) REFERENCES medico(crm)
+);
+
+/*NORMALIZAÇÃO DAS TABELAS*/
+
+INSERT INTO especialidade(nome)
+VALUES 
+("Cardiologia"),
+("Pediatria"),
+("Dermatologia"),
+("Psiquiatria"),
+("Clínica Médica");
+
+INSERT INTO medico(crm,nome,uf,id_especialidade)
+VALUES
+(11111,"Dr. João Silva","SP",1),
+(22222,"Dra. Ana Souza","RJ",2),
+(33333,"Dr. Carlos Mendes","MG",3),
+(44444,"Dra. Beatriz Lima","SP",4),
+(55555,"Dr. Marcos Paulo","PR",5),
+(66666,"Dra. Fernanda Costa","SC",1);
+
+INSERT INTO paciente(cpf,nome,nascimento,cidade,email)
+VALUES
+(12345678901,"Lucas Oliveira",'1990-05-15',"São Paulo","lucas@email.com"),
+(98765432100,"Maria Ribeiro",'1985-10-22',"Rio de Janeiro","mariana@email.com"),
+(45612378944,"Roberto Alves",'1978-03-10',"Campinas","roberto@email.com"),
+(78945612311,"Juliana Costa",'2001-07-05',"Curitiba","juliana@email.com"),
+(32165498722,"Fernando Santos",'1995-12-30',"Belo Horizonte","fernando@email.com");
+
+INSERT INTO consulta(data_agendamento,hora_agendamento,valor,status_consulta,cpf,crm)
+VALUES
+('2026-03-01','10:00:00',250.00,"Agendada",12345678901,11111),
+('2026-02-20','14:00:00',180.00,"Realizada",98765432100,22222),
+('2026-03-05','09:00:00',300.00,"Agendada",45612378944,33333),
+('2026-02-15','16:30:00',400.00,"Realizada",78945612311,44444),
+('2026-03-10','11:00:00',150.00,"Agendada",32165498722,55555);
+
+/*Consultas*/
+
+SELECT crm AS "CRM",nome AS "Nome_Completo",uf AS "UF_Registro" FROM medico WHERE uf="SP";
+
+SELECT COUNT(crm) AS "QTD_Médicos" FROM medico;
+
+SELECT nome FROM medico WHERE nome LIKE "%ana%";
+
+SELECT nome FROM paciente WHERE cidade LIKE "C%";
+
+SELECT medico.nome,medico.uf,especialidade.nome FROM medico INNER JOIN especialidade ON medico.id_especialidade = especialidade.id;
+
+UPDATE paciente SET email="lucas.oliveira@email.com" WHERE cpf=12345678901;
+
+SELECT * FROM paciente;
+
+DELETE FROM consulta WHERE id=5;
+
+SELECT * FROM consulta
